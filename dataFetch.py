@@ -102,6 +102,8 @@ def fetch_player_data():
             )
             # Step 2: Convert directly to float
             player_df[col] = pd.to_numeric(player_df[col], errors='coerce')
+    
+    return player_df
 
 def clean_data():
     team_df = fetch_team_data()
