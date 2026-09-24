@@ -99,26 +99,30 @@ def returnPizzaContainer(player_df, player1_df, player2_df, metric):
 def render_1v1_compare():
     player_df, team_df = clean_data()
     metric_list = ["Overall", "Attack", "Defence", "Captaincy"]
-    player1 = st.selectbox(
-        "Select Player 1",
-        options=player_df["web_name"] + " (" + player_df["team"] + ")",
-        index=None,
-        placeholder="Select Player 1"
-    )
+    display_options = player_df["web_name"] + " (" + player_df["team"] + ")"
 
-    player2 = st.selectbox(
-        "Select Player 2",
-        options=player_df["web_name"] + " (" + player_df["team"] + ")",
-        index=None,
-        placeholder="Select Player 2"
-    )
+    col1, col2, col3 = st.columns(3)
 
-    metric = st.selectbox(
-        "Select Comparision Metric", 
-        options=metric_list,
-        index=None
-    )
-    
+    with col1:
+        player1 = st.selectbox(
+            "Select Player 1",
+            options=display_options,
+            index=None,
+            placeholder="Select Player 1",
+        )
+
+    with col2:
+        player2 = st.selectbox(
+            "Select Player 2",
+            options=display_options,
+            index=None,
+            placeholder="Select Player 2",
+        )
+
+    with col3:
+        metric = st.selectbox(
+            "Select Comparison Metric", options=metric_list, index=None
+        )
 
     both_selected = player1 is not None and player2 is not None and metric is not None
     if st.button("Generate Chart", disabled=not both_selected):
