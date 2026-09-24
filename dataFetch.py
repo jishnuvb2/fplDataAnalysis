@@ -73,7 +73,7 @@ def fetch_player_data():
         'expected_goals_conceded_per_90', 'expected_goals_conceded', 'expected_goal_involvements'
     ]
 
-    player_df = df[cols_retain]
+    player_df = df[cols_retain].copy()
     pos_map = {
         1: 'GKP',
         2: 'DEF',
