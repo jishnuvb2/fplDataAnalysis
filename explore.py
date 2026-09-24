@@ -1,5 +1,6 @@
 import streamlit as st
 from  dataFetch import clean_data
+from components import render_1v1_compare
 
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
@@ -31,4 +32,4 @@ elif page == "Team Analysis":
     st.title("Team analysis")
 
 elif page == "1v1 Compare":
-    st.title("1v1 Compare")
+    render_1v1_compare()

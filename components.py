@@ -9,4 +9,9 @@ from dataFetch import clean_data
 
 def render_1v1_compare():
     player_df, team_df = clean_data()
-    
+    player1 = st.selectbox(
+        "Select Player 1",
+        options=player_df["web_name"] + " (" + player_df["team"] + ")",
+        index=None,
+        placeholder="Select Player 1"
+    )
