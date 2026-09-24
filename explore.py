@@ -1,11 +1,34 @@
 import streamlit as st
 from  dataFetch import clean_data
 
-st.title("FPL Live Dashboard")
-st.write("App is successfully deployed and running live!")
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "Home"
 
-if st.button("Refresh Data"):
-    # below code runs only if this button has been clicked
-    with st.spinner("Please wait while connecting to FPL API"):
-        player_df, team_df = clean_data()
-        st.metric(label="No of Teams", value=len(team_df))
+st.sidebar.title("Contents")
+st.sidebar.write("----")
+
+if st.sidebar.button("Home", use_container_width=True):
+    st.session_state.current_page = "Home"
+
+if st.sidebar.button("Charts", use_container_width=True):
+    st.session_state.current_page = "Charts"
+
+if st.sidebar.button("Team Analysis", use_container_width=True):
+    st.session_state.current_page = "Team Analysis"
+
+if st.sidebar.button("1v1 Compare", use_container_width=True):
+    st.session_state.current_page = "1v1 Compare"
+
+page = st.session_state.current_page
+
+if page == "Home":
+    st.title("Home Page")
+
+elif page == "Charts":
+    st.title("Charts Page")
+
+elif page == "Team Analysis":
+    st.title("Team analysis")
+
+elif page == "1v1 Compare":
+    st.title("1v1 Compare")
