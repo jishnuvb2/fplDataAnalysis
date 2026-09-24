@@ -3,6 +3,7 @@ from config import GAMEWEEK, MANAGER_ID
 import warnings
 import pandas as pd
 import requests
+import numpy as np
 
 # function to fetch team data from FPL website
 def fetch_team_data():
@@ -228,4 +229,72 @@ def clean_data():
         for pos, mask in pos_rules.items():
             player_df.loc[(player_df['element_type'] == pos) & mask, metric_name] = True
 
-    
+        player_df['defcon_pos_rank'] = (
+        player_df.groupby('element_type')['defensive_contribution']
+        .rank(pct=True)
+    )
+
+    if 'F1' in player_df.columns:
+        player_df["opp1"] = player_df["F1"].str.extract(r"^([A-Z]+)")
+        player_df["opp2"] = player_df["F2"].str.extract(r"^([A-Z]+)")
+        player_df["opp3"] = player_df["F3"].str.extract(r"^([A-Z]+)")
+        player_df["opp4"] = player_df["F4"].str.extract(r"^([A-Z]+)")
+        player_df["opp5"] = player_df["F5"].str.extract(r"^([A-Z]+)")
+
+        player_df.drop(columns=["F2", "F3", "F4", "F5"], inplace=True)
+    else:
+        print("Warning: F1-F5 columns not found in player_df. Assuming opponent columns (opp1-opp5) were already created or will be handled elsewhere.")
+
+    # Merge xgaTeam for each opponent, correcting the renaming issue
+    # The existing xgaTeam (player's team) will remain named xgaTeam.
+    # The incoming xgaTeam (opponent's) will be suffixed then renamed.
+
+    att_weight = np.where(player_df['element_type'] == 'DEF', 4.2,
+                np.where(player_df['element_type'] == 'MID', 4.0,
+                np.where(player_df['element_type'] == 'FWD', 3.8, 3.0)))
+
+    # Defensive Weight (W_DEF): DEF/GKP=4.0, MID/FWD=0.0 (zeroed out to prevent mid clean-sheet inflation)
+    def_weight = np.where(player_df['element_type'].isin(['DEF', 'GKP']), 4.0, 0.0)
+
+    for i in range(1, 6):
+        # Merge team_df to get the opponent's xgaTeam
+        # Use suffixes to prevent renaming player_df's existing 'xgaTeam'
+        # The incoming 'short_name' will be suffixed '_temp_sn'
+        # The incoming 'xgaTeam' will be suffixed '_temp_xga'
+        player_df = player_df.merge(team_df[['short_name', 'xgaTeam', 'xgTeam']],
+                                    left_on=f'opp{i}', right_on='short_name',
+                                    how='left',
+                                    suffixes=('', f'_temp_opp{i}'))
+
+        # Rename the opponent's xgaTeam column to the desired format (e.g., 'xga_opp1')
+        player_df.rename(columns={f'xgaTeam_temp_opp{i}': f'xga_opp{i}', f'xgTeam_temp_opp{i}' : f'xg_opp{i}'}, inplace=True)
+
+        # Drop the temporary short_name column from the merge
+        player_df.drop(columns=[f'short_name_temp_opp{i}'], errors='ignore', inplace=True)
+
+    # Calculate eGI values
+    for i in range(1, 6):
+        # 1. Expected Team Goals for match i using your GAMEWEEK baseline
+        etxg = (player_df['xgTeam'] + player_df[f'xga_opp{i}']) / (2 * GAMEWEEK)
+        etxga = (player_df[f'xg_opp{i}'] + player_df['xgaTeam']) / (2 * GAMEWEEK)
+
+        # 2. Separate eG and eA to maintain proper share scaling
+        eG = player_df['XGcontribution'] * etxg
+        eA = player_df['XAcontribution'] * (etxg * 0.7)
+        player_df[f'match_{i}_xga'] = etxga
+        player_df[f'match_{i}_defScore'] = player_df['defcon_pos_rank']/etxga
+        # 3. Store match eGI
+        player_df[f'match_{i}_eGI'] = eG + eA
+        xp_underlying = 2.0 + (player_df[f'match_{i}_eGI'] * att_weight) + (player_df[f'match_{i}_defScore'] * def_weight)
+        player_df[f'match_{i}_xPts'] = (0.60 * xp_underlying) + (0.40 * player_df['form'])
+
+    # 4. Total 5-game rolling eGI
+    player_df['eGI_5'] = player_df[[f'match_{i}_eGI' for i in range(1, 6)]].sum(axis=1)
+    player_df['xgA_5'] = player_df[[f'match_{i}_xga' for i in range(1, 6)]].sum(axis=1)
+    player_df['ds_5'] = player_df[[f'match_{i}_defScore' for i in range(1, 6)]].sum(axis=1)
+    player_df['xpts_5'] = player_df[[f'match_{i}_xPts' for i in range(1, 6)]].sum(axis=1)
+    player_df.drop(columns=['short_name'], inplace=True)
+
+    return player_df, team_df
+
+
