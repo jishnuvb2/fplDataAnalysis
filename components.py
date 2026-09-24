@@ -6,12 +6,9 @@ from mplsoccer import PyPizza, FontManager
 import plotly.express as px
 from plotly.subplots import make_subplots
 from dataFetch import clean_data
-from styles import style
 from config import metrics_definition
 #********* Styling ******
-st.html(
-    style,
-)
+
 font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
                           'src/hinted/Roboto-Regular.ttf')
 font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
@@ -97,6 +94,7 @@ def returnPizzaContainer(player_df, player1_df, player2_df, metric):
 
 
 def render_1v1_compare():
+    st.title("1v1 Player Comparision")
     player_df, team_df = clean_data()
     metric_list = ["Overall", "Attack", "Defence", "Captaincy"]
     display_options = player_df["web_name"] + " (" + player_df["team"] + ")"

@@ -1,7 +1,9 @@
 import streamlit as st
 from  dataFetch import clean_data
 from components import render_1v1_compare
+from styles import style
 
+st.html(style)
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
 
