@@ -82,9 +82,12 @@ def returnPizzaContainer(player_df, player1_df, player2_df, metric):
         ),                          # values to be used when adding parameter-values labels
     )
 
+    p1_name = player1_df["web_name"].iloc[0]
+    p2_name = player2_df["web_name"].iloc[0]
+
     # add title
     fig_text(
-        0.515, 0.99, f"<{player1_df['web_name']}> vs <{player2_df['web_name']}>", size=17, fig=fig,
+        0.515, 0.99, f"<{p1_name}> vs <{p2_name}>", size=17, fig=fig,
         highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
