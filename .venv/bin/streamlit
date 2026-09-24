@@ -1,4 +1,4 @@
-#!/Users/jishnu/Documents/fplDataAnalysis/.venv/bin/python3
+#!/Users/jishnu/Documents/fplDataAnalysis/.venv/bin/python
 import sys
 from streamlit.web.cli import main
 if __name__ == '__main__':
