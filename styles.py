@@ -13,12 +13,11 @@ style = """
         color: white !important;
     }
     
-    .st-key-center-button {
+    .st-key-center-submit div.stButton {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
+        width: 100%;
     }
-
     </style>
     """
