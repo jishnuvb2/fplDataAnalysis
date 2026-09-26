@@ -188,30 +188,36 @@ def render_charts():
             combined_mask = mask_position & mask_team & mask_price
             filtered_players = player_df[combined_mask]
 
-        # get the x and y axis
-        x_axis = st.selectbox(
-            "Choose your X Axis",
-            options = player_df.columns.to_list(),
-            index=None 
-        )
+        col2_1, col2_2 = st.columns(2)
+        with col2_1:
+            # get the x and y axis
+            x_axis = st.selectbox(
+                "Choose your X Axis",
+                options = player_df.columns.to_list(),
+                index=None 
+            )
 
-        y_axis = st.selectbox(
-            "Choose your Y Axis",
-            options = player_df.columns.to_list(),
-            index=None 
-        )
+            color = st.selectbox(
+                "Color By",
+                options= player_df.columns.to_list(),
+                index=None
+            )
 
-        color = st.selectbox(
-            "Color By",
-            options= player_df.columns.to_list(),
-        )
+        with col2_2:
+            y_axis = st.selectbox(
+                "Choose your Y Axis",
+                options = player_df.columns.to_list(),
+                index=None 
+            )
 
-        hover_fields = st.multiselect(
-            "Chose data to appear on hover",
-            options=player_df.columns.to_list(),
-            default=["now_cost", "selected_by_percent"],
-            wrap=True
-        )
+            
+
+            hover_fields = st.multiselect(
+                "Chose data to appear on hover",
+                options=player_df.columns.to_list(),
+                default=["now_cost", "selected_by_percent"],
+                wrap=True
+            )
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
 
