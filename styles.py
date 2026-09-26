@@ -13,11 +13,11 @@ style = """
         color: white !important;
     }
     
-    .st-key-center-submit div.stButton {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
+    div[class*="st-key-center-submit"] div[data-testid="stButton"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     }
     </style>
     """
