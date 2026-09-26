@@ -122,14 +122,12 @@ def render_1v1_compare():
             "Select Comparison Metric", options=metric_list, index=None
         )
 
-    both_selected = player1 is not None and player2 is not None and metric is not None
-    col_left, col_button, col_right = st.columns([2, 1, 2])
-    with col_button:
-        if st.button("Generate Chart", disabled=not both_selected):
-            player1_df = get_player(player_df, player1)
-            player2_df = get_player(player_df, player2)
-            fig = returnPizzaContainer(player_df, player1_df, player2_df, metric)
-            st.pyplot(fig)
+    both_selected = player1 is not None and player2 is not None and metric is not None    
+    if st.button("Generate Chart", disabled=not both_selected):
+        player1_df = get_player(player_df, player1)
+        player2_df = get_player(player_df, player2)
+        fig = returnPizzaContainer(player_df, player1_df, player2_df, metric)
+        st.pyplot(fig)
 
 
 #****************************Charts Page*********************************************
@@ -224,8 +222,6 @@ def render_charts():
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
 
-    col_left, col_button, col_right = st.columns([2, 1, 2])
-    with col_button:
-        if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
-            fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
-            st.plotly_chart(fig, use_container_width=True)            
+    if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
+        fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
+        st.plotly_chart(fig, use_container_width=True)
