@@ -215,7 +215,7 @@ def render_charts():
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
 
-        if st.button("Generate Chart", disabled=not axis_selected and not filters_selected):
+        if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
             fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
             st.plotly_chart(fig, use_container_width=True)
             
