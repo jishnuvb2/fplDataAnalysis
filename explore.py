@@ -3,6 +3,12 @@ from  dataFetch import clean_data
 from components import render_1v1_compare, render_charts
 from styles import style
 
+st.set_page_config(
+    page_title="FPL Data Analysis",
+    layout="wide",  # This strips out the large left/right whitespace margins
+)
+
+
 st.html(style)
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
