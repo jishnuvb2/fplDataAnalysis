@@ -12,5 +12,13 @@ style = """
         background-color: #218838 !important; /* Darker green on hover */
         color: white !important;
     }
+    
+    .st-key-center-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+    }
+
     </style>
     """

@@ -123,7 +123,7 @@ def render_1v1_compare():
         )
 
     both_selected = player1 is not None and player2 is not None and metric is not None
-    if st.button("Generate Chart", disabled=not both_selected):
+    if st.button("Generate Chart", disabled=not both_selected, key="center-button"):
         player1_df = get_player(player_df, player1)
         player2_df = get_player(player_df, player2)
         fig = returnPizzaContainer(player_df, player1_df, player2_df, metric)
@@ -200,7 +200,8 @@ def render_charts():
             color = st.selectbox(
                 "Color By",
                 options= player_df.columns.to_list(),
-                index=None
+                index=None,
+                placeholder= "Segregate the output by this column"
             )
 
         with col2_2:
@@ -221,7 +222,7 @@ def render_charts():
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
 
-    if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
+    if st.button("Generate Chart",key="center-button", disabled=not axis_selected or not filters_selected):
         fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
         st.plotly_chart(fig, use_container_width=True)
             
