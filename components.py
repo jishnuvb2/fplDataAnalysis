@@ -16,7 +16,7 @@ font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/
 font_bold = FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
                         'RobotoSlab[wght].ttf')
 
-#************** Helper Functions for render_1v1_compare() *******************
+#************** 1v1 Compare *******************
 
 # function that returns the mask for the selected player
 def get_player(df, player):
@@ -95,7 +95,7 @@ def returnPizzaContainer(player_df, player1_df, player2_df, metric):
 
 def render_1v1_compare():
     st.title("1v1 Player Comparision")
-    player_df, team_df = clean_data()
+    player_df = st.session_state.player_df
     metric_list = ["Overall", "Attack", "Defence", "Captaincy"]
     display_options = player_df["web_name"] + " (" + player_df["team"] + ")"
 
@@ -129,6 +129,91 @@ def render_1v1_compare():
         fig = returnPizzaContainer(player_df, player1_df, player2_df, metric)
         st.pyplot(fig)
 
-    
 
-    
+#****************************Charts Page*********************************************
+
+def draw_chart(df, x_axis, y_axis, color, hover_fields):
+    fig = px.scatter(
+        df,
+        x=x_axis,
+        y=y_axis,
+        color=color,
+        hover_name= "web_name",
+        hover_data= hover_fields,
+        title= f"{x_axis} vs {y_axis}",
+    )
+
+    fig.update_layout(
+    title_x=0.5,  # Centers the title text
+    title_font=dict(size=20, family="Roboto, sans-serif"),
+    )
+    return fig
+
+def render_charts():
+    # Create two columns with a 3:7 ratio (30% and 70%)
+    col1, col2 = st.columns([3, 7])
+    player_df = st.session_state.team_df
+    team_df = st.session_state.player_df
+    with col1:
+        # filter section
+        position = st.multiselect(
+            "Filter Player Positions",
+            ["GKP", "DEF", "MID", "FWD"],
+            default=["GKP", "DEF", "MID", "FWD"]
+        )
+
+        team = st.multiselect(
+            "Choose teams or select all",
+            team_df["short_name"].unique(),
+            default=[]
+        )
+
+        price_range = st.slider(
+            "Set Price Range",
+            0.0,20.0,(4.0, 16.0)
+        )
+
+    filters_selected = position is not None and team is not None and price_range is not None
+
+    with col2:
+        # the actual chart goes here
+        if filters_selected:
+            mask_position = player_df["element_type"].isin(position)
+            mask_team = player_df["team"].isin(team)
+            mask_price = (player_df["now_cost"] >= price_range[0]) & (
+                player_df["now_cost"] <= price_range[1]
+            )
+            combined_mask = mask_position & mask_team & mask_price
+            filtered_players = player_df[combined_mask]
+
+        # get the x and y axis
+        x_axis = st.selectbox(
+            "Choose your X Axis",
+            options = player_df.columns.to_list(),
+            index=None 
+        )
+
+        y_axis = st.selectbox(
+            "Choose your Y Axis",
+            options = player_df.columns.to_list(),
+            index=None 
+        )
+
+        color = st.selectbox(
+            "Color By",
+            options= player_df.columns.to_list(),
+            default="element_type"
+        )
+
+        hover_fields = st.multiselect(
+            "Chose data to appear on hover",
+            options=player_df.columns.to_list(),
+            default=["now_cost", "selected_by_percent"]
+        )
+
+        axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
+
+        if st.button("Generate Chart", disabled=axis_selected and filters_selected):
+            fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
+            st.plotly_chart(fig, use_container_width=True)
+            
