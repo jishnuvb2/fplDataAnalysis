@@ -159,13 +159,15 @@ def render_charts():
         position = st.multiselect(
             "Filter Player Positions",
             ["GKP", "DEF", "MID", "FWD"],
-            default=["GKP", "DEF", "MID", "FWD"]
+            default=["GKP", "DEF", "MID", "FWD"],
+            wrap=True
         )
 
         team = st.multiselect(
             "Choose teams or select all",
             team_df["short_name"].unique(),
-            default=[]
+            default=[],
+            wrap=True
         )
 
         price_range = st.slider(
@@ -202,13 +204,13 @@ def render_charts():
         color = st.selectbox(
             "Color By",
             options= player_df.columns.to_list(),
-            default="element_type"
         )
 
         hover_fields = st.multiselect(
             "Chose data to appear on hover",
             options=player_df.columns.to_list(),
-            default=["now_cost", "selected_by_percent"]
+            default=["now_cost", "selected_by_percent"],
+            wrap=True
         )
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
