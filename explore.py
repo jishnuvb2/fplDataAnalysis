@@ -1,5 +1,4 @@
 import streamlit as st
-from  dataFetch import clean_data
 from components import render_1v1_compare, render_charts
 from styles import style
 import pandas as pd
