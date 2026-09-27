@@ -243,9 +243,9 @@ def clean_data():
     def_lookup = dict(zip(team_df['short_name'], team_df['defensive_multiplier']))
 
     # similar stuff for defenders
-    league_avg_def_contrib = outfield_df['defensive_contributions'].mean()
+    league_avg_def_contrib = outfield_df['defensive_contribution'].mean()
     league_avg_influence = outfield_df['influence'].mean()
-    player_df['def_contribM'] = player_df['defensive_contributions'] / league_avg_def_contrib
+    player_df['def_contribM'] = player_df['defensive_contribution'] / league_avg_def_contrib
     player_df['influenceM'] = player_df['influence'] / league_avg_influence
     player_df['defensive_index'] = (0.50 * player_df['def_contribM']) + (0.50 * player_df['influenceM'])
     player_df['own_team_leakiness'] = player_df['team'].map(def_lookup).fillna(1.0)
