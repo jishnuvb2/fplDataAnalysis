@@ -7,3 +7,4 @@ highlight-text
 mplsoccer
 scipy
 numpy
+understatapi
