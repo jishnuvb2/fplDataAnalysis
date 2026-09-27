@@ -83,7 +83,8 @@ def fetch_understat():
         # 4. Clean text spacing issues & map short names before returning
         team_aggregates['Team'] = team_aggregates['Team'].astype(str).apply(lambda x: x.replace('\u00a0', ' ').strip())
         team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)
-        team_aggregates.drop(columns=["Team_ID", "Team", ])        
+        team_aggregates.drop(columns=["Team_ID", "Team", ])
+        team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]        
     return team_aggregates
 
 
@@ -231,4 +232,9 @@ def clean_data():
                                         left_on=f'opp{i}', right_on='short_name',
                                         how='left',
                                         suffixes=('', f'_temp_opp{i}'))
+            # Rename the opponent's xgaTeam column to the desired format (e.g., 'xga_opp1')
+            player_df.rename(columns={f'xG_Conceded_temp_opp{i}': f'xgConceded_opp{i}', f'xG_Created_temp_opp{i}' : f'xgFor_opp{i}'}, inplace=True)   
+            # Drop the temporary short_name column from the merge
+            player_df.drop(columns=[f'short_name_temp_opp{i}'], errors='ignore', inplace=True)
+
     return player_df, team_df
