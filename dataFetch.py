@@ -83,8 +83,10 @@ def fetch_understat():
         # 4. Clean text spacing issues & map short names before returning
         team_aggregates['Team'] = team_aggregates['Team'].astype(str).apply(lambda x: x.replace('\u00a0', ' ').strip())
         team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)
-        team_aggregates.drop(columns=["Team_ID", "Team", ])
-        team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]        
+        team_aggregates.drop(columns=["Team_ID", "Team"])
+        team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]
+        team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
+        team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]        
     return team_aggregates
 
 
@@ -228,7 +230,7 @@ def clean_data():
         print("Warning: F1-F5 columns not found in player_df. Assuming opponent columns (opp1-opp5) were already created or will be handled elsewhere.")
 
     for i in range(1, 6):
-            player_df = player_df.merge(team_df[['short_name', 'xG_Conceded', 'xG_Created']],
+            player_df = player_df.merge(team_df[['short_name', 'xg/90', 'xgA/90']],
                                         left_on=f'opp{i}', right_on='short_name',
                                         how='left',
                                         suffixes=('', f'_temp_opp{i}'))
