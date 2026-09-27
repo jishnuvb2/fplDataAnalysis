@@ -5,7 +5,6 @@ from highlight_text import fig_text
 from mplsoccer import PyPizza, FontManager
 import plotly.express as px
 from plotly.subplots import make_subplots
-from dataFetch import clean_data
 from config import metrics_definition
 #********* Styling ******
 
