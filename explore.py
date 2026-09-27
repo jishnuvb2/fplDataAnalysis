@@ -2,6 +2,7 @@ import streamlit as st
 from  dataFetch import clean_data
 from components import render_1v1_compare, render_charts
 from styles import style
+import pandas as pd
 
 st.set_page_config(
     page_title="FPL Data Analysis",
@@ -29,7 +30,9 @@ if st.sidebar.button("1v1 Compare", use_container_width=True):
     st.session_state.current_page = "1v1 Compare"
 
 page = st.session_state.current_page
-player_df, team_df = clean_data()
+player_df = pd.read_csv("players.csv")
+team_df = pd.read_csv("teams.csv")
+
 st.session_state.player_df = player_df
 st.session_state.team_df = team_df
 
