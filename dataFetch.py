@@ -81,8 +81,8 @@ def fetch_understat():
         team_aggregates['PPDA_Allowed_Coeff'] = team_aggregates['PPDA_Allowed_Att'] / team_aggregates['PPDA_Allowed_Def']
 
         # 4. Clean text spacing issues & map short names before returning
-        # team_aggregates['Team'] = team_aggregates['Team'].astype(str).apply(lambda x: x.replace('\u00a0', ' ').strip())
-        # team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)        
+        team_aggregates['Team'] = team_aggregates['Team'].astype(str).apply(lambda x: x.replace('\u00a0', ' ').strip())
+        team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)        
     return team_aggregates
 
 
