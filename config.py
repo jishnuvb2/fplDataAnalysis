@@ -15,3 +15,26 @@ metrics_definition = {
                 "expected_goal_involvements","now_cost", "influence", "threat", "creativity",
                 "xga_opp1", "match_1_eGI"]
 }
+
+fpl_team_map = {
+    'Arsenal': 'ARS',
+    'Aston Villa': 'AVL',
+    'Bournemouth': 'BOU',
+    'Brentford': 'BRE',
+    'Brighton': 'BHA',
+    'Chelsea': 'CHE',
+    'Coventry': 'COV',
+    'Crystal Palace': 'CRY',
+    'Everton': 'EVE',
+    'Fulham': 'FUL',
+    'Hull': 'HUL',
+    'Ipswich': 'IPS',
+    'Leeds': 'LEE',
+    'Liverpool': 'LIV',
+    'Manchester City': 'MCI',
+    'Manchester United': 'MUN',
+    'Newcastle United': 'NEW',
+    'Nottingham Forest': 'NFO',
+    'Sunderland': 'SUN',
+    'Tottenham': 'TOT'
+}

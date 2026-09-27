@@ -1,4 +1,4 @@
-#!/Users/jishnu/Documents/fplDataAnalysis/.venv/bin/python
+#!/Users/jishnu/Documents/fplDataAnalysis/.venv/bin/python3.14
 import sys
 from charset_normalizer.cli import cli_detect
 if __name__ == '__main__':

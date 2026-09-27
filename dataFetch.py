@@ -1,11 +1,94 @@
 # this file is used to import the player data and team data
-from config import GAMEWEEK, MANAGER_ID
+from config import GAMEWEEK, MANAGER_ID, fpl_team_map
 import pandas as pd
 import requests
 import numpy as np
+from understatapi import UnderstatClient
+
+
+def fetch_understat_team_data():
+    with UnderstatClient() as client:
+    # 1. Target the EPL league layer for the 2026/27 season
+    # 2. Call get_team_data() to pull the master dictionary
+        leagues_data = client.league(league="EPL").get_team_data(season="2026")
+    # 1. Parse all match metrics out of the dictionary
+    all_matches = []
+    for team_id, team_info in leagues_data.items():
+        team_name = team_info['title']
+        understat_id = team_info['id']
+        
+        for match in team_info['history']:
+            ppda_dict = match.get('ppda', {})
+            ppda_allowed_dict = match.get('ppda_allowed', {})
+            
+            all_matches.append({
+                'Team_ID': understat_id,
+                'Team': team_name,
+                
+                # Counting match outcomes
+                'Goals_Scored': int(match.get('scored', 0)),
+                'Goals_Conceded': int(match.get('missed', 0)),
+                'Points': int(match.get('pts', 0)),
+                'Wins': int(match.get('wins', 0)),
+                'Draws': int(match.get('draws', 0)),
+                'Losses': int(match.get('loses', 0)),
+                
+                # Underlying Performance Analytics
+                'xG_Created': float(match.get('xG', 0)),
+                'xG_Conceded': float(match.get('xGA', 0)),
+                'npxG_Created': float(match.get('npxG', 0)),
+                'npxG_Conceded': float(match.get('npxGA', 0)),
+                'npxG_Difference': float(match.get('npxGD', 0)),
+                'Expected_Points': float(match.get('xpts', 0)),
+                
+                # Progression Metrics
+                'Deep_Passes_Completed': int(match.get('deep', 0)),
+                'Deep_Passes_Allowed': int(match.get('deep_allowed', 0)),
+                
+                # PPDA raw values
+                'PPDA_Attacking_Passes': int(ppda_dict.get('att', 0)),
+                'PPDA_Defensive_Actions': int(ppda_dict.get('def', 0)),
+                'PPDA_Allowed_Att': int(ppda_allowed_dict.get('att', 0)),
+                'PPDA_Allowed_Def': int(ppda_allowed_dict.get('def', 0))
+            })
+
+    df_matches = pd.DataFrame(all_matches)
+
+    # 2. Season-level aggregation grouped by Team
+    team_aggregates = df_matches.groupby(['Team_ID', 'Team']).agg({
+        'Goals_Scored': 'sum',
+        'Goals_Conceded': 'sum',
+        'Points': 'sum',
+        'Wins': 'sum',
+        'Draws': 'sum',
+        'Losses': 'sum',
+        'xG_Created': 'sum',
+        'xG_Conceded': 'sum',
+        'npxG_Created': 'sum',
+        'npxG_Conceded': 'sum',
+        'npxG_Difference': 'sum',
+        'Expected_Points': 'sum',
+        'Deep_Passes_Completed': 'sum',
+        'Deep_Passes_Allowed': 'sum',
+        'PPDA_Attacking_Passes': 'sum',
+        'PPDA_Defensive_Actions': 'sum',
+        'PPDA_Allowed_Att': 'sum',
+        'PPDA_Allowed_Def': 'sum'
+    }).reset_index()
+
+    # 3. Calculate seasonal derived ratios
+    team_aggregates['PPDA_Coeff'] = team_aggregates['PPDA_Attacking_Passes'] / team_aggregates['PPDA_Defensive_Actions']
+    team_aggregates['PPDA_Allowed_Coeff'] = team_aggregates['PPDA_Allowed_Att'] / team_aggregates['PPDA_Allowed_Def']
+
+    # 4. Rank by overall performance quality and extract top 5
+    team_aggregates = team_aggregates.sort_values(by='Team')
+    # merge with team_data
+    team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)
+    return team_aggregates
 
 # function to fetch team data from FPL website
 def fetch_team_data():
+    understat_team_data = fetch_understat_team_data()
     url = "https://fantasy.premierleague.com/api/bootstrap-static/"
     res = requests.get(url).json()
     df = pd.DataFrame(res['teams'])
@@ -53,7 +136,10 @@ def fetch_team_data():
 
     team_df.loc[:, 'fdr_sum_next_5'] = team_df['id'].map(lambda tid: sum(fix[1] for fix in team_next_5[tid][:5]))
 
-    return team_df
+    # merge with understat data based on short name
+    merged_team_df = pd.merge(team_df, understat_team_data, on="short_name", how= "inner")
+
+    return merged_team_df
 
 
 def fetch_player_data():
@@ -297,5 +383,6 @@ def clean_data():
     player_df.drop(columns=['short_name'], inplace=True)
 
     return player_df, team_df
+
 
 
