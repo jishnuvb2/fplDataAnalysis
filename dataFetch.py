@@ -5,9 +5,16 @@ import requests
 import numpy as np
 from understatapi import UnderstatClient
 
-""""
+
 def fetch_understat():
-    with UnderstatClient() as client:
+    with UnderstatClient(
+        headless=True,
+        chrome_options=[
+            "--headless",
+            "--no-sandbox",
+            "--disable-dev-shm-usage"
+        ]
+    ) as client:
         # 1. Target the EPL league layer for the 2026/27 season
         # 2. Call get_team_data() to pull the master dictionary
         leagues_data = client.league(league="EPL").get_team_data(season="2026")
@@ -87,127 +94,6 @@ def fetch_understat():
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
         team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
         team_aggregates.drop(columns=["Team_ID", "Team"])       
-    return team_aggregates
-"""
-
-
-import json
-import re
-
-def fetch_understat():
-    # 1. Targets the specific historical 2026 dataset endpoint
-    url = "https://understat.com"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    response = requests.get(url, headers=headers)
-
-    # 2. Flexible regular expression matching any variable spacing or quotes variations
-    pattern = r"teamsData\s*=\s*JSON\.parse\(['\"]([^'\"]+)['\"]\)"
-    match = re.search(pattern, response.text)
-
-    if match:
-        # Pull the matched capturing group out safely
-        json_raw_string = match.group(1)
-        # Handle the unicode character escape layer back to standard dictionary variables
-        decoded_json = json_raw_string.encode("utf8").decode("unicode_escape")
-        leagues_data = json.loads(decoded_json)
-    else:
-        # FIX: Replaced st.error with a clean, standalone Python print statement
-        print("Error: Understat data parsing failed. Bypassing execution hook safely.")
-        return pd.DataFrame()
-
-    # --- YOUR EXACT LOOP AND ANALYSIS RUNS UNTOUCHED BELOW ---
-    all_matches = []
-    for team_id, team_info in leagues_data.items():
-        team_name = team_info["title"]
-        understat_id = team_info["id"]
-
-        for match in team_info["history"]:
-            ppda_dict = match.get("ppda", {})
-            ppda_allowed_dict = match.get("ppda_allowed", {})
-
-            all_matches.append(
-                {
-                    "Team_ID": understat_id,
-                    "Team": team_name,
-                    "Goals_Scored": int(match.get("scored", 0)),
-                    "Goals_Conceded": int(match.get("missed", 0)),
-                    "Points": int(match.get("pts", 0)),
-                    "Wins": int(match.get("wins", 0)),
-                    "Draws": int(match.get("draws", 0)),
-                    "Losses": int(match.get("loses", 0)),
-                    "xG_Created": float(match.get("xG", 0)),
-                    "xG_Conceded": float(match.get("xGA", 0)),
-                    "npxG_Created": float(match.get("npxG", 0)),
-                    "npxG_Conceded": float(match.get("npxGA", 0)),
-                    "npxG_Difference": float(match.get("npxGD", 0)),
-                    "Expected_Points": float(match.get("xpts", 0)),
-                    "Deep_Passes_Completed": int(match.get("deep", 0)),
-                    "Deep_Passes_Allowed": int(match.get("deep_allowed", 0)),
-                    "PPDA_Attacking_Passes": int(ppda_dict.get("att", 0)),
-                    "PPDA_Defensive_Actions": int(ppda_dict.get("def", 0)),
-                    "PPDA_Allowed_Att": int(ppda_allowed_dict.get("att", 0)),
-                    "PPDA_Allowed_Def": int(ppda_allowed_dict.get("def", 0)),
-                }
-            )
-
-    df_matches = pd.DataFrame(all_matches)
-
-    team_aggregates = (
-        df_matches.groupby(["Team_ID", "Team"])
-        .agg(
-            {
-                "Goals_Scored": "sum",
-                "Goals_Conceded": "sum",
-                "Points": "sum",
-                "Wins": "sum",
-                "Draws": "sum",
-                "Losses": "sum",
-                "xG_Created": "sum",
-                "xG_Conceded": "sum",
-                "npxG_Created": "sum",
-                "npxG_Conceded": "sum",
-                "npxG_Difference": "sum",
-                "Expected_Points": "sum",
-                "Deep_Passes_Completed": "sum",
-                "Deep_Passes_Allowed": "sum",
-                "PPDA_Attacking_Passes": "sum",
-                "PPDA_Defensive_Actions": "sum",
-                "PPDA_Allowed_Att": "sum",
-                "PPDA_Allowed_Def": "sum",
-            }
-        )
-        .reset_index()
-    )
-
-    team_aggregates["PPDA_Coeff"] = (
-        team_aggregates["PPDA_Attacking_Passes"]
-        / team_aggregates["PPDA_Defensive_Actions"]
-    )
-    team_aggregates["PPDA_Allowed_Coeff"] = (
-        team_aggregates["PPDA_Allowed_Att"] / team_aggregates["PPDA_Allowed_Def"]
-    )
-
-    team_aggregates["Team"] = (
-        team_aggregates["Team"]
-        .astype(str)
-        .apply(lambda x: x.replace("\u00a0", " ").strip())
-    )
-    team_aggregates["short_name"] = team_aggregates["Team"].map(fpl_team_map)
-    team_aggregates["Played"] = (
-        team_aggregates["Wins"]
-        + team_aggregates["Draws"]
-        + team_aggregates["Losses"]
-    )
-    team_aggregates["xgA/90"] = (
-        team_aggregates["xG_Conceded"] / team_aggregates["Played"]
-    )
-    team_aggregates["xg/90"] = (
-        team_aggregates["xG_Created"] / team_aggregates["Played"]
-    )
-
-    team_aggregates = team_aggregates.drop(columns=["Team_ID", "Team"])
     return team_aggregates
 
 
