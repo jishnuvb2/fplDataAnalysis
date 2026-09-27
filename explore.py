@@ -46,4 +46,6 @@ elif page == "Team Analysis":
     st.title("Team analysis")
 
 elif page == "1v1 Compare":
-    render_1v1_compare()
+    left_margin, center_content, right_margin = st.columns([1, 4, 1])
+    with center_content:
+        render_1v1_compare()

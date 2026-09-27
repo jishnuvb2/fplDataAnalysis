@@ -51,7 +51,7 @@ def returnPizzaContainer(player_df, player1_df, player2_df, metric):
     fig, ax = baker.make_pizza(
         values1,                     # list of values
         compare_values=values2,    # comparison values
-        figsize=(4, 4),             # adjust figsize according to your need
+        figsize=(8, 8),             # adjust figsize according to your need
         kwargs_slices=dict(
             facecolor="#1A78CF", edgecolor="#222222",
             zorder=2, linewidth=1
