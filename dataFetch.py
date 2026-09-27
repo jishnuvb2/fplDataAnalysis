@@ -240,7 +240,7 @@ def clean_data():
     team_df['deep_pass_mult'] = team_df['Deep_Passes_Allowed'] / avg_team_deep_passes
     team_df['defensive_multiplier'] = (0.70 * team_df['xg_conceded_mult']) + (0.30 * team_df['deep_pass_mult'])
     team_df.drop(columns=['xg_conceded_mult', 'deep_pass_mult'], inplace=True)
-    def_lookup = dict(zip(team_df['team_name'], team_df['defensive_multiplier']))
+    def_lookup = dict(zip(team_df['team'], team_df['defensive_multiplier']))
 
     if 'F1' in player_df.columns:
         player_df["opp1"] = player_df["F1"].str.extract(r"^([A-Z]+)")
