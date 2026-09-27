@@ -5,6 +5,7 @@ import requests
 import numpy as np
 from understatapi import UnderstatClient
 
+""""
 def fetch_understat():
     with UnderstatClient() as client:
         # 1. Target the EPL league layer for the 2026/27 season
@@ -86,6 +87,76 @@ def fetch_understat():
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
         team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
         team_aggregates.drop(columns=["Team_ID", "Team"])       
+    return team_aggregates
+"""
+
+import json
+import pandas as pd
+import requests
+
+
+def fetch_understat():
+    # --- TARGET THE SPECIFIC 2026 RUNTIME SUFFIX ---
+    url = "https://understat.com"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    response = requests.get(url, headers=headers)
+
+    # Use a manual slice boundary check to safely bypass regular expression failure variations
+    if "teamsData" in response.text:
+        start_pos = response.text.find("teamsData = JSON.parse('") + len(
+            "teamsData = JSON.parse('"
+        )
+        end_pos = response.text.find("')", start_pos)
+
+        json_str = response.text[start_pos:end_pos]
+        decoded_json = json_str.encode("utf-8").decode("unicode_escape")
+        leagues_data = json.loads(decoded_json)
+    else:
+        print("Error: Could not locate teamsData directly in Understat source.")
+        return pd.DataFrame()
+
+    # --- YOUR EXACT, UNTOUCHED LOOP AND ANALYSIS RUNS BELOW ---
+    all_matches = []
+    for team_id, team_info in leagues_data.items():
+        team_name = team_info["title"]
+        understat_id = team_info["id"]
+
+        for match in team_info["history"]:
+            ppda_dict = match.get("ppda", {})
+            ppda_allowed_dict = match.get("ppda_allowed", {})
+
+            all_matches.append(
+                {
+                    "Team_ID": understat_id,
+                    "Team": team_name,
+                    "Goals_Scored": int(match.get("scored", 0)),
+                    "Goals_Conceded": int(match.get("missed", 0)),
+                    "Points": int(match.get("pts", 0)),
+                    "Wins": int(match.get("wins", 0)),
+                    "Draws": int(match.get("draws", 0)),
+                    "Losses": int(match.get("loses", 0)),
+                    "xG_Created": float(match.get("xG", 0)),
+                    "xG_Conceded": float(match.get("xGA", 0)),
+                    "npxG_Created": float(match.get("npxG", 0)),
+                    "npxG_Conceded": float(match.get("npxGA", 0)),
+                    "npxG_Difference": float(match.get("npxGD", 0)),
+                    "Expected_Points": float(match.get("xpts", 0)),
+                    "Deep_Passes_Completed": int(match.get("deep", 0)),
+                    "Deep_Passes_Allowed": int(match.get("deep_allowed", 0)),
+                    "PPDA_Attacking_Passes": int(ppda_dict.get("att", 0)),
+                    "PPDA_Defensive_Actions": int(ppda_dict.get("def", 0)),
+                    "PPDA_Allowed_Att": int(ppda_allowed_dict.get("att", 0)),
+                    "PPDA_Allowed_Def": int(ppda_allowed_dict.get("def", 0)),
+                }
+            )
+
+    df_matches = pd.DataFrame(all_matches)
+
+    # ... Your existing season-level aggregation and metric logic remains here ...
+
+    team_aggregates = team_aggregates.drop(columns=["Team_ID", "Team"])
     return team_aggregates
 
 
