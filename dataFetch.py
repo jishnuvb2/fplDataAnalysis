@@ -83,10 +83,10 @@ def fetch_understat():
         # 4. Clean text spacing issues & map short names before returning
         team_aggregates['Team'] = team_aggregates['Team'].astype(str).apply(lambda x: x.replace('\u00a0', ' ').strip())
         team_aggregates['short_name'] = team_aggregates['Team'].map(fpl_team_map)
-        team_aggregates.drop(columns=["Team_ID", "Team"])
         team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
-        team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]        
+        team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
+        team_aggregates.drop(columns=["Team_ID", "Team"])       
     return team_aggregates
 
 
@@ -218,6 +218,30 @@ def clean_data():
     # Flag squad membership
     player_df["in_my_team"] = player_df["id"].isin(my_player_ids)
 
+    outfield_df = player_df[player_df['element_type'] != 'GKP']
+
+    # 2. Calculate the global league averages for Player Metrics (Season Totals)
+    league_avg_xg = outfield_df['expected_goals'].mean()
+    league_avg_xa = outfield_df['expected_assists'].mean()
+    league_avg_threat = outfield_df['threat'].mean()
+    league_avg_creativity = outfield_df['creativity'].mean()
+
+    player_df['xgM'] = player_df['expected_goals']/league_avg_xg
+    player_df['xaM'] = player_df['expected_assists']/league_avg_xa
+    player_df['threatM'] = player_df['threat']/league_avg_threat
+    player_df['creativityM'] = player_df['creativity']/league_avg_creativity
+
+    player_df['attacking_index'] = 0.35 * player_df['xgM'] + 0.25 * (player_df['xaM'] + player_df['threatM']) + 0.15 * player_df['creativityM']
+    player_df.drop(columns=['xaM', 'xgM', 'threatM', 'creativityM'], inplace=True)
+
+    avg_team_xg_conceded = team_df['xG_Conceded'].mean()
+    avg_team_deep_passes = team_df['Deep_Passes_Allowed'].mean()
+    team_df['xg_conceded_mult'] = team_df['xG_Conceded'] / avg_team_xg_conceded
+    team_df['deep_pass_mult'] = team_df['Deep_Passes_Allowed'] / avg_team_deep_passes
+    team_df['defensive_multiplier'] = (0.70 * team_df['xg_conceded_mult']) + (0.30 * team_df['deep_pass_mult'])
+    team_df.drop(columns=['xg_conceded_mult', 'deep_pass_mult'], inplace=True)
+    def_lookup = dict(zip(team_df['team_name'], team_df['defensive_multiplier']))
+
     if 'F1' in player_df.columns:
         player_df["opp1"] = player_df["F1"].str.extract(r"^([A-Z]+)")
         player_df["opp2"] = player_df["F2"].str.extract(r"^([A-Z]+)")
@@ -229,14 +253,20 @@ def clean_data():
     else:
         print("Warning: F1-F5 columns not found in player_df. Assuming opponent columns (opp1-opp5) were already created or will be handled elsewhere.")
 
-    for i in range(1, 6):
-            player_df = player_df.merge(team_df[['short_name', 'xg/90', 'xgA/90']],
-                                        left_on=f'opp{i}', right_on='short_name',
-                                        how='left',
-                                        suffixes=('', f'_temp_opp{i}'))
-            # Rename the opponent's xgaTeam column to the desired format (e.g., 'xga_opp1')
-            player_df.rename(columns={f'xG_Conceded_temp_opp{i}': f'xgConceded_opp{i}', f'xG_Created_temp_opp{i}' : f'xgFor_opp{i}'}, inplace=True)   
-            # Drop the temporary short_name column from the merge
-            player_df.drop(columns=[f'short_name_temp_opp{i}'], errors='ignore', inplace=True)
+    opp_cols = ['opp1', 'opp2', 'opp3', 'opp4', 'opp5']
+
+    # Loop through each of the 5 upcoming games
+    for i, col in enumerate(opp_cols, 1):
+        if col in player_df.columns:
+            # 1. Map the opponent's short-code to their defensive multiplier
+            # fillna(1.0) keeps it at a neutral league average if a team code doesn't match
+            opp_multiplier = player_df[col].map(def_lookup).fillna(1.0)
+            
+            # 2. Multiply the player's intrinsic index by the opponent's leakiness
+            player_df[f'opp_{i}_score'] = player_df['attacking_index'] * opp_multiplier
+
+    score_cols = [f'opp_{i}_score' for i in range(1, 6)]
+    player_df['5gw_attack_score'] = player_df[score_cols].sum(axis=1)
+            
 
     return player_df, team_df
