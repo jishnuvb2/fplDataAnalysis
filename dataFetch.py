@@ -4,17 +4,11 @@ import pandas as pd
 import requests
 import numpy as np
 from understatapi import UnderstatClient
+import os
 
 
 def fetch_understat():
-    with UnderstatClient(
-        headless=True,
-        chrome_options=[
-            "--headless",
-            "--no-sandbox",
-            "--disable-dev-shm-usage"
-        ]
-    ) as client:
+    with UnderstatClient() as client:
         # 1. Target the EPL league layer for the 2026/27 season
         # 2. Call get_team_data() to pull the master dictionary
         leagues_data = client.league(league="EPL").get_team_data(season="2026")
@@ -300,3 +294,8 @@ def clean_data():
     player_df['5gw_defense_score'] = player_df[def_score_cols].sum(axis=1)
 
     return player_df, team_df
+
+
+player_df, team_df = clean_data()
+player_df.to_csv("players.csv", index=False)
+team_df.to_csv("teams.csv", index=False)
