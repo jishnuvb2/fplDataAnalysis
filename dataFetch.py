@@ -95,29 +95,37 @@ import pandas as pd
 import requests
 
 
+import json
+import re
+import pandas as pd
+import requests
+
+
 def fetch_understat():
-    # --- TARGET THE SPECIFIC 2026 RUNTIME SUFFIX ---
+    # 1. Targets the specific historical 2026 dataset endpoint
     url = "https://understat.com"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     response = requests.get(url, headers=headers)
 
-    # Use a manual slice boundary check to safely bypass regular expression failure variations
-    if "teamsData" in response.text:
-        start_pos = response.text.find("teamsData = JSON.parse('") + len(
-            "teamsData = JSON.parse('"
-        )
-        end_pos = response.text.find("')", start_pos)
+    # 2. Flexible regular expression matching any variable spacing or quotes variations
+    pattern = r"teamsData\s*=\s*JSON\.parse\(['\"]([^'\"]+)['\"]\)"
+    match = re.search(pattern, response.text)
 
-        json_str = response.text[start_pos:end_pos]
-        decoded_json = json_str.encode("utf-8").decode("unicode_escape")
+    if match:
+        # Pull the matched capturing group out safely
+        json_raw_string = match.group(1)
+        # Handle the unicode character escape layer back to standard dictionary variables
+        decoded_json = json_raw_string.encode("utf8").decode("unicode_escape")
         leagues_data = json.loads(decoded_json)
     else:
-        print("Error: Could not locate teamsData directly in Understat source.")
+        st.error(
+            "Understat data parsing failed. Bypassing execution hook safely."
+        )
         return pd.DataFrame()
 
-    # --- YOUR EXACT, UNTOUCHED LOOP AND ANALYSIS RUNS BELOW ---
+    # --- YOUR EXACT LOOP AND ANALYSIS RUNS UNTOUCHED BELOW ---
     all_matches = []
     for team_id, team_info in leagues_data.items():
         team_name = team_info["title"]
@@ -154,7 +162,58 @@ def fetch_understat():
 
     df_matches = pd.DataFrame(all_matches)
 
-    # ... Your existing season-level aggregation and metric logic remains here ...
+    team_aggregates = (
+        df_matches.groupby(["Team_ID", "Team"])
+        .agg(
+            {
+                "Goals_Scored": "sum",
+                "Goals_Conceded": "sum",
+                "Points": "sum",
+                "Wins": "sum",
+                "Draws": "sum",
+                "Losses": "sum",
+                "xG_Created": "sum",
+                "xG_Conceded": "sum",
+                "npxG_Created": "sum",
+                "npxG_Conceded": "sum",
+                "npxG_Difference": "sum",
+                "Expected_Points": "sum",
+                "Deep_Passes_Completed": "sum",
+                "Deep_Passes_Allowed": "sum",
+                "PPDA_Attacking_Passes": "sum",
+                "PPDA_Defensive_Actions": "sum",
+                "PPDA_Allowed_Att": "sum",
+                "PPDA_Allowed_Def": "sum",
+            }
+        )
+        .reset_index()
+    )
+
+    team_aggregates["PPDA_Coeff"] = (
+        team_aggregates["PPDA_Attacking_Passes"]
+        / team_aggregates["PPDA_Defensive_Actions"]
+    )
+    team_aggregates["PPDA_Allowed_Coeff"] = (
+        team_aggregates["PPDA_Allowed_Att"] / team_aggregates["PPDA_Allowed_Def"]
+    )
+
+    team_aggregates["Team"] = (
+        team_aggregates["Team"]
+        .astype(str)
+        .apply(lambda x: x.replace("\u00a0", " ").strip())
+    )
+    team_aggregates["short_name"] = team_aggregates["Team"].map(fpl_team_map)
+    team_aggregates["Played"] = (
+        team_aggregates["Wins"]
+        + team_aggregates["Draws"]
+        + team_aggregates["Losses"]
+    )
+    team_aggregates["xgA/90"] = (
+        team_aggregates["xG_Conceded"] / team_aggregates["Played"]
+    )
+    team_aggregates["xg/90"] = (
+        team_aggregates["xG_Created"] / team_aggregates["Played"]
+    )
 
     team_aggregates = team_aggregates.drop(columns=["Team_ID", "Team"])
     return team_aggregates
