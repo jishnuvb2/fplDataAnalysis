@@ -242,6 +242,24 @@ def clean_data():
     team_df.drop(columns=['xg_conceded_mult', 'deep_pass_mult'], inplace=True)
     def_lookup = dict(zip(team_df['short_name'], team_df['defensive_multiplier']))
 
+    # similar stuff for defenders
+    league_avg_def_contrib = outfield_df['defensive_contributions'].mean()
+    league_avg_influence = outfield_df['influence'].mean()
+    player_df['def_contribM'] = player_df['defensive_contributions'] / league_avg_def_contrib
+    player_df['influenceM'] = player_df['influence'] / league_avg_influence
+    player_df['defensive_index'] = (0.50 * player_df['def_contribM']) + (0.50 * player_df['influenceM'])
+    player_df['own_team_leakiness'] = player_df['team'].map(def_lookup).fillna(1.0)
+    player_df['base_defensive_power'] = player_df['defensive_index'] / player_df['own_team_leakiness'].replace(0, 0.01)
+    player_df.drop(columns=['def_contribM', 'influenceM'], inplace=True)  
+
+    avg_team_xg_created = team_df['xG_Created'].mean()
+    avg_team_deep_completed = team_df['Deep_Passes_Completed'].mean()
+    team_df['xg_created_mult'] = team_df['xG_Created'] / avg_team_xg_created
+    team_df['deep_comp_mult'] = team_df['Deep_Passes_Completed'] / avg_team_deep_completed
+    team_df['offensive_multiplier'] = (0.70 * team_df['xg_created_mult']) + (0.30 * team_df['deep_comp_mult'])
+    team_df.drop(columns=['xg_created_mult', 'deep_comp_mult'], inplace=True)
+    attack_lookup = dict(zip(team_df['short_name'], team_df['offensive_multiplier']))
+
     if 'F1' in player_df.columns:
         player_df["opp1"] = player_df["F1"].str.extract(r"^([A-Z]+)")
         player_df["opp2"] = player_df["F2"].str.extract(r"^([A-Z]+)")
@@ -263,10 +281,15 @@ def clean_data():
             opp_multiplier = player_df[col].map(def_lookup).fillna(1.0)
             
             # 2. Multiply the player's intrinsic index by the opponent's leakiness
-            player_df[f'opp_{i}_score'] = player_df['attacking_index'] * opp_multiplier
+            player_df[f'opp_{i}_att_score'] = player_df['attacking_index'] * opp_multiplier
 
-    score_cols = [f'opp_{i}_score' for i in range(1, 6)]
+            opp_att_multiplier = player_df[col].map(attack_lookup).fillna(1.0)
+            player_df[f'opp_{i}_def_score'] = player_df['base_defensive_power'] / opp_att_multiplier.replace(0, 0.01)
+
+
+    score_cols = [f'opp_{i}_att_score' for i in range(1, 6)]
     player_df['5gw_attack_score'] = player_df[score_cols].sum(axis=1)
-            
+    def_score_cols = [f'opp_{i}_def_score' for i in range(1, 6)]
+    player_df['5gw_defense_score'] = player_df[def_score_cols].sum(axis=1)
 
     return player_df, team_df
