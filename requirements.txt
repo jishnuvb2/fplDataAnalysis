@@ -8,3 +8,4 @@ mplsoccer
 scipy
 numpy
 understatapi
+selenium==4.9.1
