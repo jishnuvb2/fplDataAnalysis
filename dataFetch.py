@@ -90,16 +90,9 @@ def fetch_understat():
     return team_aggregates
 """
 
-import json
-import pandas as pd
-import requests
-
 
 import json
 import re
-import pandas as pd
-import requests
-
 
 def fetch_understat():
     # 1. Targets the specific historical 2026 dataset endpoint
@@ -120,9 +113,8 @@ def fetch_understat():
         decoded_json = json_raw_string.encode("utf8").decode("unicode_escape")
         leagues_data = json.loads(decoded_json)
     else:
-        st.error(
-            "Understat data parsing failed. Bypassing execution hook safely."
-        )
+        # FIX: Replaced st.error with a clean, standalone Python print statement
+        print("Error: Understat data parsing failed. Bypassing execution hook safely.")
         return pd.DataFrame()
 
     # --- YOUR EXACT LOOP AND ANALYSIS RUNS UNTOUCHED BELOW ---
