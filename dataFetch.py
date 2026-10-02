@@ -87,7 +87,7 @@ def fetch_understat():
         team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
         team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
-        team_aggregates.drop(columns=["Team_ID", "Team"])       
+        team_aggregates.drop(columns=["Team_ID", "Team"], inplace=True)       
     return team_aggregates
 
 
