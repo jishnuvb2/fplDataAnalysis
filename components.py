@@ -236,7 +236,8 @@ def render_team_analysis():
     st.dataframe(
         team_df,
         column_order=default_cols,
-        height=800
+        height=750,
+        hide_index=True
     )
 
 
