@@ -288,7 +288,7 @@ def render_my_players():
     my_players = player_df[player_df['in_my_team'] == True]
     myPlayerCols = [
         'web_name', 'now_cost', 'form', 'selected_by_percent', 'attacking_index', 'defensive_index', '5gw_attack_score',
-        '5gw_defense_score', 'opp_1_att_score', 'opp_1_def_score'
+        '5gw_defense_score', 'opp_1_att_score', 'opp_1_def_score', 'F1', 'fdr_sum_next_5'
     ]
     st.dataframe(
         my_players,
