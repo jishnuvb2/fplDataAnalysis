@@ -281,5 +281,17 @@ def render_team_analysis():
             column_order= player_default_cols
         )
 
+# ***************** My Players *************************
 
-    
+def render_my_players():
+    player_df = st.session_state.player_df
+    my_players = player_df[player_df['in_my_team'] == True]
+    myPlayerCols = [
+        'web_name', 'now_cost', 'form', 'selected_by_percent', 'attacking_index', 'defensive_index', '5gw_attack_score',
+        '5gw_defense_score', 'opp_1_att_score', 'opp_1_def_score'
+    ]
+    st.dataframe(
+        my_players,
+        column_order=myPlayerCols,
+        hide_index=True
+        )

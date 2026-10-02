@@ -1,5 +1,5 @@
 import streamlit as st
-from components import render_1v1_compare, render_charts, render_team_analysis
+from components import render_1v1_compare, render_charts, render_team_analysis, render_my_players
 from styles import style
 import pandas as pd
 
@@ -56,3 +56,4 @@ elif page == "1v1 Compare":
 
 elif page == "My Players":
     st.title("My Players")
+    render_my_players()
