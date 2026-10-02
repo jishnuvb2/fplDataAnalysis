@@ -254,7 +254,7 @@ def render_team_analysis():
 
     if st.button(
         "See players of selected teams",
-        disabled= len(team) >0
+        disabled= len(team) == 0
     ):
         st.dataframe(
             player_df[player_df['team'].isin(team)],
