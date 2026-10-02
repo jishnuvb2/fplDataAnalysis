@@ -1,5 +1,5 @@
 # this file is used to import the player data and team data
-from config import GAMEWEEK, MANAGER_ID, fpl_team_map
+from config import MANAGER_ID, fpl_team_map
 import pandas as pd
 import requests
 import numpy as np
