@@ -1,5 +1,5 @@
 import streamlit as st
-from components import render_1v1_compare, render_charts
+from components import render_1v1_compare, render_charts, render_team_analysis
 from styles import style
 import pandas as pd
 
@@ -44,6 +44,7 @@ elif page == "Charts":
 
 elif page == "Team Analysis":
     st.title("Team analysis")
+    render_team_analysis()
 
 elif page == "1v1 Compare":
     left_margin, center_content, right_margin = st.columns([1, 4, 1])
