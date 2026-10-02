@@ -22,11 +22,14 @@ if st.sidebar.button("Home", use_container_width=True):
 if st.sidebar.button("Charts", use_container_width=True):
     st.session_state.current_page = "Charts"
 
-if st.sidebar.button("Team Analysis", use_container_width=True):
+if st.sidebar.button("Team Analysis & Player Explore", use_container_width=True):
     st.session_state.current_page = "Team Analysis"
 
 if st.sidebar.button("1v1 Compare", use_container_width=True):
     st.session_state.current_page = "1v1 Compare"
+
+if st.sidebar.button("My Players", use_container_width=True):
+    st.session_state.current_page = "My Players"
 
 page = st.session_state.current_page
 player_df = pd.read_csv("players.csv")
@@ -50,3 +53,6 @@ elif page == "1v1 Compare":
     left_margin, center_content, right_margin = st.columns([1, 4, 1])
     with center_content:
         render_1v1_compare()
+
+elif page == "My Players":
+    st.title("My Players")
