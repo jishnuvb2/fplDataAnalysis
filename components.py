@@ -259,6 +259,13 @@ def render_team_analysis():
         wrap=True
     )
 
+    position = st.multiselect(
+            "Filter Player Positions",
+            ["GKP", "DEF", "MID", "FWD"],
+            default=["GKP", "DEF", "MID", "FWD"],
+            wrap=True
+        )
+
     player_default_cols = ['web_name', 'now_cost', 'element_type', 'total_points', 'form',
                            'selected_by_percent', 'expected_goal_involvements', 'goal_involvements',
                            'attacking_index', 'defensive_index', 'defensive_contribution', '5gw_attack_score',
@@ -269,7 +276,7 @@ def render_team_analysis():
         disabled= len(team) == 0
     ):
         st.dataframe(
-            player_df[player_df['team'].isin(team)],
+            player_df[(player_df['team'].isin(team)) & (player_df['element_type'].isin(position))],
             hide_index=True,
             column_order= player_default_cols
         )
