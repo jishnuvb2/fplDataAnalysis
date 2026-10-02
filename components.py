@@ -140,7 +140,11 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
         hover_name= "web_name",
         hover_data= hover_fields,
         title= f"{x_axis} vs {y_axis}",
-        shape="in_my_team"
+        symbol="in_my_team",
+        symbol_map= {
+        True: "star",     # Or use strings like "True" if your column data type is text
+        False: "circle"
+        }
     )
 
     fig.update_layout(
