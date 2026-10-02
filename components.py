@@ -147,8 +147,10 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
         }
     )
     # make my players slightly bigger
-    fig.update_traces(marker=dict(size=12))
-
+    fig.for_each_trace(
+        lambda trace: trace.update(marker=dict(size=12)) if trace.name == "True" or trace.name is True else None
+    )
+    
     fig.update_layout(
     title_x=0.5,  # Centers the title text
     title_font=dict(size=20, family="Roboto, sans-serif"),
