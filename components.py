@@ -224,3 +224,25 @@ def render_charts():
     if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
         fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
         st.plotly_chart(fig, use_container_width=True)
+
+# ******************Team Analysis******************
+def render_team_analysis():
+    # show the team_df in a dataframe
+    team_df = st.session_state.team_df
+    teams = st.dataframe(
+        team_df,
+        key='data',
+        on_select='rerun',
+        selection_mode=['multi-row']
+    )
+    # allow user to select on a team and then view players from that team
+    selected_row_indices = teams.get("selection", {}).get("rows", [])
+    if selected_row_indices:
+        # 2. Filter the original dataframe using .iloc
+        selected_df = team_df.iloc[selected_row_indices]
+        
+        # 3. Convert the filtered rows into your desired list format
+        # As a list of lists (values only):
+        values_list = selected_df.values.tolist()
+
+    st.write(values_list)
