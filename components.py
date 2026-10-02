@@ -229,10 +229,16 @@ def render_charts():
 def render_team_analysis():
     # show the team_df in a dataframe
     team_df = st.session_state.team_df
+    default_cols = [
+        'short_name', 'position', 'F1', 'F2','F3','F4','F5',
+        'fdr_sum_next_5', 'xg/90', 'xgA/90', 'defensive_multiplier','offensive_multiplier'  
+        ]
     st.dataframe(
-        team_df
+        team_df,
+        column_order=default_cols,
+        height=800
     )
 
-    
+
 
     
