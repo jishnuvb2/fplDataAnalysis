@@ -87,7 +87,13 @@ def fetch_understat():
         team_aggregates["Played"] = team_aggregates["Wins"] + team_aggregates["Draws"] + team_aggregates["Losses"]
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
         team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
-        team_aggregates.drop(columns=["Team_ID", "Team"], inplace=True)       
+        team_aggregates.drop(columns=["Team_ID", "Team"], inplace=True)
+        team_aggregates = team_aggregates.round({"PPDA_Coeff": 2, 
+                                                 "PPDA_Allowed_Coeff": 2,
+                                                  "xg/90" : 2,
+                                                  "xgA/90" :2,
+                                                  "defensive_multiplier":2,
+                                                  "offensive_multiplier":2})       
     return team_aggregates
 
 
