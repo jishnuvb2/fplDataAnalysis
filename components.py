@@ -293,5 +293,6 @@ def render_my_players():
     st.dataframe(
         my_players,
         column_order=myPlayerCols,
-        hide_index=True
+        hide_index=True,
+        height=500
         )
