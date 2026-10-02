@@ -229,6 +229,7 @@ def render_charts():
 def render_team_analysis():
     # show the team_df in a dataframe
     team_df = st.session_state.team_df
+    player_df = st.session_state.player_df
     default_cols = [
         'short_name', 'position', 'F1', 'F2','F3','F4','F5',
         'fdr_sum_next_5', 'xg/90', 'xgA/90', 'defensive_multiplier','offensive_multiplier'  
@@ -241,6 +242,25 @@ def render_team_analysis():
         hide_index=True
     )
 
+    # allow the user to select team(s) and analayze players of that
+    team = st.multiselect(
+        "Choose teams to view players of that team",
+        team_df["short_name"].unique(),
+        default=[],
+        wrap=True
+    )
+
+    player_default_cols = ['web_name', 'now_cost']
+
+    if st.button(
+        "See players of selected teams",
+        disabled= len(team) >0
+    ):
+        st.dataframe(
+            player_df[player_df['team'].isin(team)],
+            hide_index=True,
+            column_order= player_default_cols
+        )
 
 
     
