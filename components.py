@@ -140,6 +140,7 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
         hover_name= "web_name",
         hover_data= hover_fields,
         title= f"{x_axis} vs {y_axis}",
+        shape="in_my_team"
     )
 
     fig.update_layout(
