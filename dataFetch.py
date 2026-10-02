@@ -7,6 +7,28 @@ from understatapi import UnderstatClient
 import os
 
 
+import requests
+
+def get_latest_completed_gameweek():
+    # 1. Hit the official base FPL API endpoint
+    url = "https://fantasy.premierleague.com/api/bootstrap-static/"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        
+        # 2. Filter for all gameweeks that have officially finished
+        completed_gameweeks = [
+            event['id'] for event in data['events'] if event['finished'] == True
+        ]
+        
+        # 3. Return the maximum ID if any are found, otherwise return 0 (e.g., before GW1)
+        return max(completed_gameweeks) if completed_gameweeks else 0
+    else:
+        raise Exception(f"Failed to fetch data from FPL API. Status code: {response.status_code}")
+
+GAMEWEEK = get_latest_completed_gameweek()
+
 def fetch_understat():
     with UnderstatClient() as client:
         # 1. Target the EPL league layer for the 2026/27 season

@@ -1,5 +1,4 @@
 MANAGER_ID = 3411214  # Replace with your team ID
-GAMEWEEK = 5
 
 # defining what metrics mean
 metrics_definition = {
