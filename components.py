@@ -229,6 +229,7 @@ def render_charts():
 def render_team_analysis():
     # show the team_df in a dataframe
     team_df = st.session_state.team_df
+    player_df = st.session_state.player_df
     teams = st.dataframe(
         team_df,
         key='data',
@@ -237,6 +238,7 @@ def render_team_analysis():
     )
     # allow user to select on a team and then view players from that team
     selected_row_indices = teams.get("selection", {}).get("rows", [])
+    values_list = []
     if selected_row_indices:
         # 2. Filter the original dataframe using .iloc
         selected_df = team_df.iloc[selected_row_indices]
@@ -244,5 +246,10 @@ def render_team_analysis():
         # 3. Convert the filtered rows into your desired list format
         # As a list of lists (values only):
         values_list = selected_df.values.tolist()
+
+    show_players = len(values_list) > 0
+    if st.button("Show players of selected teams", disabled = not show_players):
+        st.dataframe(player_df[player_df["team"].isin(values_list)])
+
 
     st.write(values_list)
