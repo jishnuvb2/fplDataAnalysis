@@ -146,6 +146,8 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
         False: "circle"
         }
     )
+    # make my players slightly bigger
+    fig.update_traces(marker=dict(size=12))
 
     fig.update_layout(
     title_x=0.5,  # Centers the title text
