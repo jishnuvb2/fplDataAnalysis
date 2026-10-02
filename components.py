@@ -148,7 +148,7 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
     )
     # make my players slightly bigger
     fig.for_each_trace(
-        lambda trace: trace.update(marker=dict(size=12)) if trace.name == "True" or trace.name is True else None
+        lambda trace: trace.update(marker=dict(size=15) if trace.name == "True" or trace.name is True else None
     )
     
     fig.update_layout(
