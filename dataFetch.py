@@ -88,8 +88,8 @@ def fetch_understat():
         team_aggregates["xgA/90"] = team_aggregates["xG_Conceded"]/ team_aggregates["Played"]
         team_aggregates["xg/90"] = team_aggregates["xG_Created"]/ team_aggregates["Played"]
         team_aggregates.drop(columns=["Team_ID", "Team"], inplace=True)
-        float_dtypes = team_aggregates.dtypes[team_aggregates.dtypes.isin(['float64', 'float32'])]
-        team_aggregates[float_dtypes.index] = team_aggregates[float_dtypes.index].round(2)      
+        float_cols = team_aggregates.select_dtypes(include=['float64', 'float32']).columns
+        team_aggregates[float_cols] = team_aggregates[float_cols].round(2)     
 
     return team_aggregates
 
