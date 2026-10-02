@@ -294,5 +294,5 @@ def render_my_players():
         my_players,
         column_order=myPlayerCols,
         hide_index=True,
-        height=565
+        height=563
         )
