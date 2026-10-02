@@ -242,7 +242,7 @@ def clean_data():
     avg_team_deep_passes = team_df['Deep_Passes_Allowed'].mean()
     team_df['xg_conceded_mult'] = team_df['xG_Conceded'] / avg_team_xg_conceded
     team_df['deep_pass_mult'] = team_df['Deep_Passes_Allowed'] / avg_team_deep_passes
-    team_df['defensive_multiplier'] = (0.70 * team_df['xg_conceded_mult']) + (0.30 * team_df['deep_pass_mult'])
+    team_df['defensive_multiplier'] = ((0.70 * team_df['xg_conceded_mult']) + (0.30 * team_df['deep_pass_mult'])).round(3)
     team_df.drop(columns=['xg_conceded_mult', 'deep_pass_mult'], inplace=True)
     def_lookup = dict(zip(team_df['short_name'], team_df['defensive_multiplier']))
 
@@ -260,7 +260,7 @@ def clean_data():
     avg_team_deep_completed = team_df['Deep_Passes_Completed'].mean()
     team_df['xg_created_mult'] = team_df['xG_Created'] / avg_team_xg_created
     team_df['deep_comp_mult'] = team_df['Deep_Passes_Completed'] / avg_team_deep_completed
-    team_df['offensive_multiplier'] = (0.70 * team_df['xg_created_mult']) + (0.30 * team_df['deep_comp_mult'])
+    team_df['offensive_multiplier'] = ((0.70 * team_df['xg_created_mult']) + (0.30 * team_df['deep_comp_mult'])).round(3)
     team_df.drop(columns=['xg_created_mult', 'deep_comp_mult'], inplace=True)
     attack_lookup = dict(zip(team_df['short_name'], team_df['offensive_multiplier']))
 
@@ -295,6 +295,9 @@ def clean_data():
     player_df['5gw_attack_score'] = player_df[score_cols].sum(axis=1)
     def_score_cols = [f'opp_{i}_def_score' for i in range(1, 6)]
     player_df['5gw_defense_score'] = player_df[def_score_cols].sum(axis=1)
+
+    float_cols = player_df.select_dtypes(include=['float64', 'float32']).columns
+    player_df[float_cols] = player_df[float_cols].round(2) 
 
     return player_df, team_df
 
