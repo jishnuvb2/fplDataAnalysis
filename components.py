@@ -6,7 +6,7 @@ from mplsoccer import PyPizza, FontManager
 import plotly.express as px
 from plotly.subplots import make_subplots
 from config import metrics_definition
-from dataFetch import GAMEWEEK
+
 #********* Styling ******
 
 font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
@@ -303,7 +303,6 @@ def render_my_players():
 
 def render_home_page():
     
-    st.write(f"Current Gameweek - {GAMEWEEK}")
     player_df = st.session_state.player_df
     team_df = st.session_state.team_df
     col1,col2 = st.columns(2)
