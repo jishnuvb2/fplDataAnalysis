@@ -298,24 +298,3 @@ def render_my_players():
         height=563
         )
 
-#****Home Page*******
-
-def render_home_page():
-    
-    st.write(f"Current Gameweek - {GAMEWEEK}")
-    player_df = st.session_state.player_df
-    team_df = st.session_state.team_df
-    col1,col2 = st.columns(2)
-    with col1:
-        # top 7 attackers for this gameweek
-        st.write("Top 7 attacking players for this gameweek")
-        st.dataframe(
-            player_df.sort_values(by="opp_1_att_score", ascending=False).head(7),
-            column_order=['web_name','opp_1_att_score', 'F1', 'expected_goal_involvements_per_90']
-        )
-    with col2:
-        st.write("Top 7 defenders for this gameweek")
-        st.dataframe(
-            player_df[player_df['element_type'] == 'DEF'].sort_values(by="opp1_def_score", ascending=False).head(7),
-            column_order= ['web_name', 'opp_1_def_score', 'F1', 'defensive_contribution']
-        )
