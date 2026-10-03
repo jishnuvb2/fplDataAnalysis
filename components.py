@@ -317,7 +317,8 @@ def render_home_page():
         st.write("Most Transferred In")
         st.dataframe(
             most_transferred_in,
-            column_order=['web_name', 'transfers_in_event', 'selected_by_percent']
+            column_order=['web_name', 'transfers_in_event', 'selected_by_percent'],
+            hide_index=True
         )
         st.write("Top 7 attacking players for this gameweek")
         st.dataframe(
@@ -329,8 +330,8 @@ def render_home_page():
         # top 7 attackers for the next 5 gameweeks
         st.write("Top 7 attacking players for the next 5 gameweeks")
         st.dataframe(
-            player_df.sort_values(by="5gw_att_score", ascending=False).head(7),
-            column_order=['web_name','5gw_att_score', 'fdr_sum_next_5', 'expected_goal_involvements_per_90', 'selected_by_percent', 'now_cost'],
+            player_df.sort_values(by="5gw_attack_score", ascending=False).head(7),
+            column_order=['web_name','5gw_attack_score', 'fdr_sum_next_5', 'expected_goal_involvements_per_90', 'selected_by_percent', 'now_cost'],
             hide_index=True
         )
 
@@ -339,7 +340,8 @@ def render_home_page():
         st.write("Most Transferred Out")
         st.dataframe(
             most_transferred_out,
-            column_order=['web_name', 'transfers_out_event', 'selected_by_percent']
+            column_order=['web_name', 'transfers_out_event', 'selected_by_percent'],
+            hide_index=True
         )
         st.write("Top 7 defenders for this gameweek")
         st.dataframe(
