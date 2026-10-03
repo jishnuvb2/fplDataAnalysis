@@ -1,5 +1,5 @@
 import streamlit as st
-from components import render_1v1_compare, render_charts, render_team_analysis, render_my_players
+from components import render_1v1_compare, render_charts, render_team_analysis, render_my_players,render_home_page
 from styles import style
 import pandas as pd
 
@@ -40,6 +40,7 @@ st.session_state.team_df = team_df
 
 if page == "Home":
     st.title("Home Page")
+    render_home_page()
 
 elif page == "Charts":
     st.title("Charts Page")
