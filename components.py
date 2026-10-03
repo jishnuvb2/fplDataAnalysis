@@ -308,8 +308,8 @@ def render_home_page():
     
     # general statistics
     # most transferred in player and most transferred out player
-    most_transferred_in = player_df.sort_values(by='transfers_in_event', ascending=False).head(3)
-    most_transferred_out = player_df.sort_values(by='transfers_out_event', ascending=False).head(3)
+    most_transferred_in = player_df.sort_values(by='transfers_in_event', ascending=False).head(5)
+    most_transferred_out = player_df.sort_values(by='transfers_out_event', ascending=False).head(5)
 
     col1,col2 = st.columns(2)
     with col1:
