@@ -6,6 +6,7 @@ from mplsoccer import PyPizza, FontManager
 import plotly.express as px
 from plotly.subplots import make_subplots
 from config import metrics_definition
+from dataFetch import GAMEWEEK
 #********* Styling ******
 
 font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
@@ -229,7 +230,7 @@ def render_charts():
             )
 
         axis_selected = x_axis is not None and y_axis is not None and color is not None and hover_fields is not None
-
+        
     if st.button("Generate Chart", disabled=not axis_selected or not filters_selected):
         fig = draw_chart(filtered_players, x_axis, y_axis, color, hover_fields)
         st.plotly_chart(fig, use_container_width=True)
@@ -295,4 +296,26 @@ def render_my_players():
         column_order=myPlayerCols,
         hide_index=True,
         height=563
+        )
+
+#****Home Page*******
+
+def render_home_page():
+    
+    st.write(f"Current Gameweek - {GAMEWEEK}")
+    player_df = st.session_state.player_df
+    team_df = st.session_state.team_df
+    col1,col2 = st.columns(2)
+    with col1:
+        # top 7 attackers for this gameweek
+        st.write("Top 7 attacking players for this gameweek")
+        st.dataframe(
+            player_df.sort_values(by="opp_1_att_score", ascending=False).head(7),
+            column_order=['web_name','opp_1_att_score', 'F1', 'expected_goal_involvements_per_90']
+        )
+    with col2:
+        st.write("Top 7 defenders for this gameweek")
+        st.dataframe(
+            player_df[player_df['element_type'] == 'DEF'].sort_values(by="opp1_def_score", ascending=False).head(7),
+            column_order= ['web_name', 'opp_1_def_score', 'F1', 'defensive_contribution']
         )
