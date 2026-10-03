@@ -305,18 +305,53 @@ def render_home_page():
     
     player_df = st.session_state.player_df
     team_df = st.session_state.team_df
+    
+    # general statistics
+    # most transferred in player and most transferred out player
+    most_transferred_in = player_df.sort_values(by='transfers_in_event', ascending=False).head(3)
+    most_transferred_out = player_df.sort_values(by='transfers_out_event', ascending=False).head(3)
+
     col1,col2 = st.columns(2)
     with col1:
         # top 7 attackers for this gameweek
+        st.write("Most Transferred In")
+        st.dataframe(
+            most_transferred_in,
+            column_order=['web_name', 'transfers_in_event', 'selected_by_percent']
+        )
         st.write("Top 7 attacking players for this gameweek")
         st.dataframe(
             player_df.sort_values(by="opp_1_att_score", ascending=False).head(7),
             column_order=['web_name','opp_1_att_score', 'F1', 'expected_goal_involvements_per_90'],
             hide_index=True
         )
+
+        # top 7 attackers for the next 5 gameweeks
+        st.write("Top 7 attacking players for the next 5 gameweeks")
+        st.dataframe(
+            player_df.sort_values(by="5gw_att_score", ascending=False).head(7),
+            column_order=['web_name','5gw_att_score', 'fdr_sum_next_5', 'expected_goal_involvements_per_90', 'selected_by_percent', 'now_cost'],
+            hide_index=True
+        )
+
+
     with col2:
+        st.write("Most Transferred Out")
+        st.dataframe(
+            most_transferred_out,
+            column_order=['web_name', 'transfers_out_event', 'selected_by_percent']
+        )
         st.write("Top 7 defenders for this gameweek")
         st.dataframe(
             player_df[player_df['element_type'] == 'DEF'].sort_values(by="opp_1_def_score", ascending=False).head(7),
-            column_order= ['web_name', 'opp_1_def_score', 'F1', 'defensive_contribution']
+            column_order= ['web_name', 'opp_1_def_score', 'F1', 'defensive_contribution'],
+            hide_index=True
         )
+
+        st.write("Top 7 defenders for the next 5 gameweeks")
+        st.dataframe(
+            player_df[player_df['element_type'] == 'DEF'].sort_values(by="5gw_defense_score", ascending=False).head(7),
+            column_order= ['web_name', '5gw_defense_score', 'fdr_sum_next_5', 'defensive_contribution', 'selected_by_percent', 'now_cost'],
+            hide_index=True
+        )
+    
