@@ -238,6 +238,10 @@ def render_charts():
 # ******************Team Analysis******************
 def render_team_analysis():
     # show the team_df in a dataframe
+
+    st.write("Offensive Multiplier - average is 1. Better than average > 1, worse <1.")
+    st.write("Defensive Multiplier - average is 1. Better than average  < 1, leaky defences have higher scores")
+
     team_df = st.session_state.team_df
     player_df = st.session_state.player_df
     default_cols = [
