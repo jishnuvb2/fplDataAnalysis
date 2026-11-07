@@ -31,12 +31,20 @@ if st.sidebar.button("1v1 Compare", use_container_width=True):
 if st.sidebar.button("My Players", use_container_width=True):
     st.session_state.current_page = "My Players"
 
+if st.sidebar.button("Basic Charts", use_container_width=True):
+    st.session_state.current_page = "Basic Charts"
+
+
 page = st.session_state.current_page
 player_df = pd.read_csv("players.csv")
 team_df = pd.read_csv("teams.csv")
+fplPlayers = pd.read_csv("pure_fpl_players.csv")
+fplTeams = pd.read_csv("pure_fpl_teams.csv")
 
 st.session_state.player_df = player_df
 st.session_state.team_df = team_df
+st.session_state.fplPlayers = fplPlayers
+st.session_state.fplTeams = fplTeams
 
 if page == "Home":
     st.title("Home Page")
@@ -44,7 +52,7 @@ if page == "Home":
 
 elif page == "Charts":
     st.title("Charts Page")
-    render_charts()
+    render_charts(mode='advanced')
 
 elif page == "Team Analysis":
     st.title("Team analysis")
@@ -58,3 +66,7 @@ elif page == "1v1 Compare":
 elif page == "My Players":
     st.title("My Players")
     render_my_players()
+
+elif page == "Basic Charts":
+    st.title("Pure FPL Data Viz")
+    render_charts(mode='basic')

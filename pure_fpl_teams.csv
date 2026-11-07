@@ -1,0 +1,21 @@
+id,short_name,position,F1,F2,F3,F4,F5,fdr_sum_next_5
+1,ARS,1,HUL(H) (2),NEW(A) (3),MCI(H) (4),BRE(A) (4),TOT(A) (3),16
+2,AVL,10,MUN(A) (3),SUN(H) (2),IPS(A) (2),EVE(H) (3),CRY(H) (2),12
+3,BOU,8,IPS(A) (2),NFO(H) (3),FUL(A) (3),BHA(H) (4),HUL(H) (2),14
+4,BRE,6,BHA(A) (4),EVE(H) (3),MUN(A) (3),ARS(H) (4),MCI(H) (4),18
+5,BHA,3,BRE(H) (3),HUL(A) (2),NEW(H) (3),BOU(A) (4),NFO(A) (2),14
+6,CHE,4,SUN(A) (3),LEE(H) (3),NFO(A) (2),CRY(H) (2),LIV(H) (4),14
+7,COV,16,EVE(A) (3),CRY(H) (2),LEE(A) (3),IPS(H) (2),MUN(A) (3),13
+8,CRY,18,LIV(H) (4),COV(A) (2),HUL(H) (2),CHE(A) (4),AVL(A) (3),15
+9,EVE,7,COV(H) (2),BRE(A) (4),LIV(H) (4),AVL(A) (3),FUL(H) (2),15
+10,FUL,15,NEW(H) (3),MCI(A) (5),BOU(H) (3),TOT(A) (3),EVE(A) (3),17
+11,HUL,11,ARS(A) (5),BHA(H) (4),CRY(A) (2),NFO(H) (3),BOU(A) (4),18
+12,IPS,14,BOU(H) (3),TOT(A) (3),AVL(H) (3),COV(A) (2),LEE(A) (3),14
+13,LEE,12,TOT(H) (3),CHE(A) (4),COV(H) (2),MCI(A) (5),IPS(H) (2),16
+14,LIV,5,CRY(A) (2),MUN(H) (3),EVE(A) (3),SUN(H) (2),CHE(A) (4),14
+15,MCI,2,NFO(A) (2),FUL(H) (2),ARS(A) (5),LEE(H) (3),BRE(A) (4),16
+16,MUN,17,AVL(H) (3),LIV(A) (4),BRE(H) (3),NEW(A) (3),COV(H) (2),15
+17,NEW,13,FUL(A) (3),ARS(H) (4),BHA(A) (4),MUN(H) (3),SUN(H) (2),16
+18,NFO,19,MCI(H) (4),BOU(A) (4),CHE(H) (4),HUL(A) (2),BHA(H) (4),18
+19,TOT,9,LEE(A) (3),IPS(H) (2),SUN(A) (3),FUL(H) (2),ARS(H) (4),14
+20,SUN,20,CHE(H) (4),AVL(A) (3),TOT(H) (3),LIV(A) (4),NEW(A) (3),17

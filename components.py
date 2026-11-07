@@ -158,11 +158,15 @@ def draw_chart(df, x_axis, y_axis, color, hover_fields):
     )
     return fig
 
-def render_charts():
+def render_charts(mode='advanced'):
     # Create two columns with a 3:7 ratio (30% and 70%)
     col1, col2 = st.columns([3, 7])
-    player_df = st.session_state.player_df
-    team_df = st.session_state.team_df
+    if mode == 'advanced':
+        player_df = st.session_state.player_df
+        team_df = st.session_state.team_df
+    else:
+        player_df = st.session_state.fplPlayers
+        team_df = st.session_state.fplTeams
     with col1:
         # filter section
         position = st.multiselect(
