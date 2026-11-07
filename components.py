@@ -391,9 +391,12 @@ def render_basic_teams():
             default=["GKP", "DEF", "MID", "FWD"],
             wrap=True
         )
-
-    st.dataframe(
-        player_df[(player_df['team'].isin(team)) & (player_df['element_type'].isin(position))],
-        column_order= ['web_name', 'now_cost', 'total_points'],
-        hide_index=True
-    )
+    if st.button(
+            "See players of selected teams",
+            disabled= len(team) == 0
+        ):
+        st.dataframe(
+            player_df[(player_df['team'].isin(team)) & (player_df['element_type'].isin(position))],
+            column_order= ['web_name', 'now_cost', 'total_points'],
+            hide_index=True
+        )
