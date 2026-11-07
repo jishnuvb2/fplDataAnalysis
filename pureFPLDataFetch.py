@@ -146,7 +146,11 @@ def clean_data():
     player_df["in_my_team"] = False
     # Flag squad membership
     player_df["in_my_team"] = player_df["id"].isin(my_player_ids)
+    
     player_df["xGiPerformance"] = player_df['goal_involvements'] - player_df['expected_goal_involvements']
+    player_df["threat/90"] = (player_df["threat"]/player_df["minutes"]) * 90
+    player_df["creativity/90"] = (player_df["creativity"]/player_df["minutes"]) * 90
+
     return player_df, team_df
 
 

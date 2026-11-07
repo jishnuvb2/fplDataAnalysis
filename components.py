@@ -367,8 +367,16 @@ def render_home_page():
     
 def render_basic_teams():
     team_df = st.session_state.fplTeams
+    player_df = st.session_state.fplPlayers
+    st.write("TEAM WISE FDR")
     st.dataframe(
         team_df,
         height=738,
         hide_index=True
         )
+
+    st.write("PLAYER TABLES")
+    st.dataframe(
+        player_df,
+        hide_index=True
+    )
