@@ -368,7 +368,7 @@ def render_home_page():
 def render_basic_teams():
     team_df = st.session_state.fplTeams
     st.dataframe(
-            team_df,
-            height=738,
-            hide_index=True
+        team_df,
+        height=738,
+        hide_index=True
         )
