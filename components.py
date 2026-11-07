@@ -365,3 +365,10 @@ def render_home_page():
             hide_index=True
         )
     
+def render_basic_teams():
+    team_df = st.session_state.fplTeams
+    st.dataframe(
+            team_df,
+            height=738,
+            hide_index=True
+        )

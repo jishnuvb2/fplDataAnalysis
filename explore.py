@@ -1,5 +1,5 @@
 import streamlit as st
-from components import render_1v1_compare, render_charts, render_team_analysis, render_my_players,render_home_page
+from components import render_1v1_compare, render_charts, render_team_analysis, render_my_players,render_home_page, render_basic_teams
 from styles import style
 import pandas as pd
 
@@ -34,6 +34,9 @@ if st.sidebar.button("My Players", use_container_width=True):
 if st.sidebar.button("Basic Charts", use_container_width=True):
     st.session_state.current_page = "Basic Charts"
 
+if st.sidebar.button("Basic Teams", use_container_width=True):
+    st.session_state.current_page = "Basic Teams"
+    
 
 page = st.session_state.current_page
 player_df = pd.read_csv("players.csv")
@@ -70,3 +73,7 @@ elif page == "My Players":
 elif page == "Basic Charts":
     st.title("Pure FPL Data Viz")
     render_charts(mode='basic')
+
+elif page == "Basic Teams":
+    st.title("Simple Team FDR")
+    render_basic_teams()
