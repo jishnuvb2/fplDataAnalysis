@@ -376,7 +376,24 @@ def render_basic_teams():
         )
 
     st.write("PLAYER TABLES")
+
+    # allow the user to select team(s) and analayze players of that
+    team = st.multiselect(
+        "Choose teams to view players of that team",
+        team_df["short_name"].unique(),
+        default=[],
+        wrap=True
+    )
+
+    position = st.multiselect(
+            "Filter Player Positions",
+            ["GKP", "DEF", "MID", "FWD"],
+            default=["GKP", "DEF", "MID", "FWD"],
+            wrap=True
+        )
+
     st.dataframe(
-        player_df,
+        player_df[(player_df['team'].isin(team)) & (player_df['element_type'].isin(position))],
+        column_order= ['web_name', 'now_cost', 'total_points'],
         hide_index=True
     )
