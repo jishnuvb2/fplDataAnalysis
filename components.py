@@ -397,6 +397,6 @@ def render_basic_teams():
         ):
         st.dataframe(
             player_df[(player_df['team'].isin(team)) & (player_df['element_type'].isin(position))],
-            column_order= ['web_name', 'now_cost', 'total_points'],
+            column_order= ['web_name', 'now_cost', 'total_points', 'threat/90', 'creativity/90'],
             hide_index=True
         )
